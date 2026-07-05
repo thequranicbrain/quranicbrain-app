@@ -135,3 +135,6 @@ function goHome() {
   document.getElementById("xp").textContent = xp;
   document.getElementById("streak").textContent = streak;
 }
+document.getElementById("lesson-screen").classList.add("hidden");
+document.getElementById("complete-screen").classList.add("hidden");
+document.getElementById("home-screen").classList.remove("hidden");
