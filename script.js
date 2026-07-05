@@ -2,9 +2,11 @@ const API_BASE = "https://api.quran.com/api/v4";
 
 let chapters = [];
 let juzList = [];
-let currentJuz = null;
-let currentSurah = null;
-let currentVerses = [];
+
+let currentJuzNumber = null;
+let currentJuzVerses = [];
+let currentSurahSection = null;
+let currentLessonVerses = [];
 
 let xp = Number(localStorage.getItem("xp")) || 0;
 let streak = Number(localStorage.getItem("streak")) || 0;
@@ -25,7 +27,7 @@ async function initApp() {
     await loadJuzList();
   } catch (error) {
     console.error(error);
-    alert("Could not load Quran data. Please check your internet connection.");
+    alert("Quran data could not load. Please check your internet connection.");
   }
 }
 
@@ -35,9 +37,7 @@ function updateStats() {
 }
 
 function showScreen(screenId) {
-  const screens = document.querySelectorAll(".screen");
-
-  screens.forEach(screen => {
+  document.querySelectorAll(".screen").forEach(screen => {
     screen.classList.add("hidden");
   });
 
@@ -68,31 +68,27 @@ async function loadJuzList() {
 
 function getChapterName(chapterNumber) {
   const chapter = chapters.find(ch => ch.id === Number(chapterNumber));
-
-  if (!chapter) {
-    return "Surah " + chapterNumber;
-  }
-
-  return chapter.name_simple;
+  return chapter ? chapter.name_simple : "Surah " + chapterNumber;
 }
 
 function getChapterArabicName(chapterNumber) {
   const chapter = chapters.find(ch => ch.id === Number(chapterNumber));
+  return chapter ? chapter.name_arabic : "";
+}
 
-  if (!chapter) {
-    return "";
-  }
-
-  return chapter.name_arabic;
+function getJuzInfo(juzNumber) {
+  return juzList.find(juz => juz.juz_number === Number(juzNumber));
 }
 
 function getSavedJuzProgress(juzNumber) {
   return Number(localStorage.getItem("juz-progress-" + juzNumber)) || 0;
 }
 
-function getSavedSurahProgress(juzNumber, chapterNumber) {
-  return Number(localStorage.getItem(`surah-progress-${juzNumber}-${chapterNumber}`)) || 0;
+function getSavedSectionProgress(juzNumber, chapterNumber) {
+  return Number(localStorage.getItem(`section-progress-${juzNumber}-${chapterNumber}`)) || 0;
 }
+
+/* JOURNEY SCREEN */
 
 function showJourney() {
   renderJuzMap();
@@ -107,11 +103,12 @@ function renderJuzMap() {
     const progress = getSavedJuzProgress(i);
 
     const bubble = document.createElement("button");
-    bubble.className = "juz-bubble";
+
+    bubble.className = "juz-bubble open";
 
     if (progress >= 100) {
       bubble.classList.add("completed");
-    } else if (i === 30 || progress > 0) {
+    } else if (progress > 0) {
       bubble.classList.add("current");
     }
 
@@ -128,27 +125,71 @@ function renderJuzMap() {
   }
 }
 
+/* OPEN JUZ */
+
 async function openJuz(juzNumber) {
+  currentJuzNumber = juzNumber;
+
+  document.getElementById("juz-title").textContent = "Loading Juz " + juzNumber + "...";
+  document.getElementById("juz-subtitle").textContent = "Fetching Quran verses";
+  showScreen("juz-detail-screen");
+
   try {
-    const response = await fetch(`${API_BASE}/juzs/${juzNumber}`);
-    const data = await response.json();
-
-    currentJuz = data.juz;
-
-    showJuzDetail(currentJuz);
+    currentJuzVerses = await fetchAllVersesByJuz(juzNumber);
+    showJuzDetail(juzNumber);
   } catch (error) {
     console.error(error);
     alert("Could not load this Juz. Please try again.");
   }
 }
 
-function showJuzDetail(juz) {
-  document.getElementById("juz-title").textContent = "Juz " + juz.juz_number;
+/*
+  Quran.com API paginates verses.
+  Maximum per_page is 50, so this function keeps fetching until all pages are loaded.
+*/
+async function fetchAllVersesByJuz(juzNumber) {
+  let allVerses = [];
+  let page = 1;
+  let hasNextPage = true;
+
+  while (hasNextPage) {
+    const url =
+      `${API_BASE}/verses/by_juz/${juzNumber}` +
+      `?language=en&words=false&fields=text_uthmani,verse_key,chapter_id,verse_number,juz_number&page=${page}&per_page=50`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (!data.verses) {
+      throw new Error("No verses returned from API.");
+    }
+
+    allVerses = allVerses.concat(data.verses);
+
+    if (data.pagination && data.pagination.next_page) {
+      page = data.pagination.next_page;
+    } else {
+      hasNextPage = false;
+    }
+  }
+
+  return allVerses.map(verse => ({
+    key: verse.verse_key,
+    arabic: verse.text_uthmani,
+    chapterNumber: Number(verse.verse_key.split(":")[0]),
+    ayahNumber: Number(verse.verse_key.split(":")[1])
+  }));
+}
+
+function showJuzDetail(juzNumber) {
+  const groupedSections = groupVersesBySurah(currentJuzVerses);
+  const juzInfo = getJuzInfo(juzNumber);
+  const juzProgress = getSavedJuzProgress(juzNumber);
+
+  document.getElementById("juz-title").textContent = "Juz " + juzNumber;
 
   document.getElementById("juz-subtitle").textContent =
-    `${Object.keys(juz.verse_mapping).length} surah section(s) · ${juz.verses_count} ayahs`;
-
-  const juzProgress = getSavedJuzProgress(juz.juz_number);
+    `${groupedSections.length} surah section(s) · ${currentJuzVerses.length} ayahs`;
 
   document.getElementById("juz-progress-fill").style.width = juzProgress + "%";
   document.getElementById("juz-progress-text").textContent = juzProgress + "%";
@@ -156,93 +197,100 @@ function showJuzDetail(juz) {
   const list = document.getElementById("surah-list");
   list.innerHTML = "";
 
-  Object.entries(juz.verse_mapping).forEach(([chapterNumber, verseRange]) => {
-    const progress = getSavedSurahProgress(juz.juz_number, chapterNumber);
+  groupedSections.forEach(section => {
+    const progress = getSavedSectionProgress(juzNumber, section.chapterNumber);
 
     const card = document.createElement("div");
     card.className = "surah-item";
 
     card.innerHTML = `
       <div>
-        <h3>${getChapterName(chapterNumber)}</h3>
-        <p>${getChapterArabicName(chapterNumber)} · Ayahs ${verseRange}</p>
+        <h3>${getChapterName(section.chapterNumber)}</h3>
+        <p>${getChapterArabicName(section.chapterNumber)} · Ayahs ${section.startAyah}-${section.endAyah}</p>
       </div>
 
       <span class="surah-pill">${progress}%</span>
     `;
 
-    card.onclick = async () => {
-      await openSurahSection(juz.juz_number, chapterNumber, verseRange);
+    card.onclick = () => {
+      openSurahSection(section);
     };
 
     list.appendChild(card);
   });
 
+  if (juzInfo) {
+    console.log("Juz API info:", juzInfo);
+  }
+
   showScreen("juz-detail-screen");
 }
 
-async function openSurahSection(juzNumber, chapterNumber, verseRange) {
-  currentSurah = {
-    juzNumber,
-    chapterNumber: Number(chapterNumber),
-    verseRange
-  };
+function groupVersesBySurah(verses) {
+  const sections = [];
+
+  verses.forEach(verse => {
+    const lastSection = sections[sections.length - 1];
+
+    if (!lastSection || lastSection.chapterNumber !== verse.chapterNumber) {
+      sections.push({
+        chapterNumber: verse.chapterNumber,
+        startAyah: verse.ayahNumber,
+        endAyah: verse.ayahNumber,
+        verses: [verse]
+      });
+    } else {
+      lastSection.endAyah = verse.ayahNumber;
+      lastSection.verses.push(verse);
+    }
+  });
+
+  return sections;
+}
+
+/* SURAH SECTION */
+
+function openSurahSection(section) {
+  currentSurahSection = section;
+  currentLessonVerses = section.verses;
+
+  const progress = getSavedSectionProgress(
+    currentJuzNumber,
+    section.chapterNumber
+  );
 
   document.getElementById("surah-title").textContent =
-    "Surah " + getChapterName(chapterNumber);
+    "Surah " + getChapterName(section.chapterNumber);
 
   document.getElementById("surah-meta").textContent =
-    `${getChapterArabicName(chapterNumber)} · Ayahs ${verseRange}`;
-
-  const progress = getSavedSurahProgress(juzNumber, chapterNumber);
+    `${getChapterArabicName(section.chapterNumber)} · Juz ${currentJuzNumber} · Ayahs ${section.startAyah}-${section.endAyah}`;
 
   document.getElementById("surah-progress-fill").style.width = progress + "%";
   document.getElementById("surah-progress-text").textContent = progress + "%";
 
-  await loadVersesForSurahSection(chapterNumber, verseRange);
-
   showScreen("surah-detail-screen");
 }
 
-async function loadVersesForSurahSection(chapterNumber, verseRange) {
-  const [startAyah, endAyah] = verseRange.split("-").map(Number);
-
-  const response = await fetch(
-    `${API_BASE}/verses/by_chapter/${chapterNumber}?language=en&words=false&per_page=300&fields=text_uthmani,verse_key`
-  );
-
-  const data = await response.json();
-
-  currentVerses = data.verses
-    .filter(verse => {
-      const ayahNumber = Number(verse.verse_key.split(":")[1]);
-      return ayahNumber >= startAyah && ayahNumber <= endAyah;
-    })
-    .map(verse => ({
-      key: verse.verse_key,
-      arabic: verse.text_uthmani,
-      chapterNumber: Number(chapterNumber)
-    }));
-}
-
 function backToJuz() {
-  if (currentJuz) {
-    showJuzDetail(currentJuz);
+  if (currentJuzNumber && currentJuzVerses.length > 0) {
+    showJuzDetail(currentJuzNumber);
   } else {
     showJourney();
   }
 }
 
+/* LESSON ENGINE */
+
 function startLesson() {
-  if (!currentVerses || currentVerses.length === 0) {
-    alert("No ayahs loaded yet. Please reopen this surah.");
+  if (!currentLessonVerses || currentLessonVerses.length === 0) {
+    alert("Please open a surah section first.");
     return;
   }
 
   currentQuestion = 0;
   score = 0;
 
-  totalQuestions = Math.min(5, currentVerses.length);
+  totalQuestions = Math.min(5, currentLessonVerses.length);
 
   showScreen("lesson-screen");
   loadQuestion();
@@ -261,8 +309,8 @@ function loadQuestion() {
 
   document.getElementById("result").textContent = "";
 
-  const randomIndex = Math.floor(Math.random() * currentVerses.length);
-  currentVerse = currentVerses[randomIndex];
+  const randomIndex = Math.floor(Math.random() * currentLessonVerses.length);
+  currentVerse = currentLessonVerses[randomIndex];
 
   document.getElementById("verse").textContent = currentVerse.arabic;
 
@@ -275,9 +323,9 @@ function createChoices() {
 
   let choices = [currentVerse.key];
 
-  while (choices.length < 4 && choices.length < currentVerses.length) {
+  while (choices.length < 4 && choices.length < currentLessonVerses.length) {
     const randomVerse =
-      currentVerses[Math.floor(Math.random() * currentVerses.length)];
+      currentLessonVerses[Math.floor(Math.random() * currentLessonVerses.length)];
 
     if (!choices.includes(randomVerse.key)) {
       choices.push(randomVerse.key);
@@ -316,11 +364,9 @@ function checkAnswer(selected, selectedButton) {
     xp += 10;
 
     selectedButton.classList.add("correct");
-
     document.getElementById("result").textContent = "✅ Correct! +10 XP";
   } else {
     selectedButton.classList.add("wrong");
-
     document.getElementById("result").textContent =
       "❌ Correct answer: Ayah " + currentVerse.key;
   }
@@ -337,20 +383,20 @@ function finishLesson() {
   localStorage.setItem("streak", streak);
   localStorage.setItem("xp", xp);
 
-  if (currentSurah) {
-    const oldProgress = getSavedSurahProgress(
-      currentSurah.juzNumber,
-      currentSurah.chapterNumber
+  if (currentSurahSection) {
+    const oldProgress = getSavedSectionProgress(
+      currentJuzNumber,
+      currentSurahSection.chapterNumber
     );
 
     const newProgress = Math.min(100, oldProgress + 10);
 
     localStorage.setItem(
-      `surah-progress-${currentSurah.juzNumber}-${currentSurah.chapterNumber}`,
+      `section-progress-${currentJuzNumber}-${currentSurahSection.chapterNumber}`,
       newProgress
     );
 
-    updateJuzProgress(currentSurah.juzNumber);
+    updateJuzProgress(currentJuzNumber);
   }
 
   updateStats();
@@ -362,21 +408,19 @@ function finishLesson() {
 }
 
 function updateJuzProgress(juzNumber) {
-  const juz = juzList.find(item => item.juz_number === Number(juzNumber));
+  const sections = groupVersesBySurah(currentJuzVerses);
 
-  if (!juz) {
+  if (sections.length === 0) {
     return;
   }
 
-  const chapterNumbers = Object.keys(juz.verse_mapping);
-
   let total = 0;
 
-  chapterNumbers.forEach(chapterNumber => {
-    total += getSavedSurahProgress(juzNumber, chapterNumber);
+  sections.forEach(section => {
+    total += getSavedSectionProgress(juzNumber, section.chapterNumber);
   });
 
-  const averageProgress = Math.round(total / chapterNumbers.length);
+  const average = Math.round(total / sections.length);
 
-  localStorage.setItem("juz-progress-" + juzNumber, averageProgress);
+  localStorage.setItem("juz-progress-" + juzNumber, average);
 }
