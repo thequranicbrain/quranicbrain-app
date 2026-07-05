@@ -4,50 +4,95 @@ body {
   background: #f8f6ef;
   display: flex;
   justify-content: center;
-  align-items: center;
   min-height: 100vh;
-} 
-
-.app {
-  text-align: center;
-  max-width: 480px;
-  padding: 20px;
 }
 
-.card {
+.app {
+  width: 100%;
+  max-width: 520px;
+  padding: 24px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 42px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #555;
+}
+
+.hidden {
+  display: none;
+}
+
+.stats-card,
+.goal-card,
+.progress-card,
+.verse-card {
   background: white;
-  padding: 25px;
   border-radius: 24px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  padding: 24px;
+  margin: 18px 0;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.stats-card {
+  display: flex;
+  justify-content: space-around;
+  font-weight: bold;
+  font-size: 20px;
 }
 
 .arabic {
   font-size: 34px;
   line-height: 2;
   direction: rtl;
-  margin-bottom: 20px;
-}
-
-input {
-  padding: 12px;
-  width: 80%;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 18px;
-  text-align: center;
 }
 
 button {
-  margin: 10px 5px;
-  padding: 12px 18px;
+  padding: 14px 22px;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   background: #2e7d32;
   color: white;
+  font-size: 18px;
   font-weight: bold;
+  cursor: pointer;
 }
 
-.stats {
+.choices {
+  display: grid;
+  gap: 12px;
   margin-top: 20px;
+}
+
+.choice-btn {
+  background: white;
+  color: black;
+  border: 2px solid #ddd;
+  padding: 16px;
+  border-radius: 18px;
+  font-size: 20px;
+}
+
+.choice-btn:hover {
+  border-color: #2e7d32;
+}
+
+.correct {
+  background: #d8f5d1;
+  border-color: #2e7d32;
+}
+
+.wrong {
+  background: #ffd6d6;
+  border-color: #c62828;
+}
+
+#result {
+  font-size: 22px;
   font-weight: bold;
 }
