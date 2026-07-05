@@ -10,9 +10,29 @@ const verses = [
     arabic: "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ"
   },
   {
+    key: "1:3",
+    surahName: "Al-Fatihah",
+    arabic: "ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
+  },
+  {
+    key: "1:4",
+    surahName: "Al-Fatihah",
+    arabic: "مَـٰلِكِ يَوْمِ ٱلدِّينِ"
+  },
+  {
+    key: "1:5",
+    surahName: "Al-Fatihah",
+    arabic: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ"
+  },
+  {
     key: "1:6",
     surahName: "Al-Fatihah",
     arabic: "ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ"
+  },
+  {
+    key: "1:7",
+    surahName: "Al-Fatihah",
+    arabic: "صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ"
   },
   {
     key: "114:1",
@@ -23,6 +43,11 @@ const verses = [
     key: "114:2",
     surahName: "An-Nas",
     arabic: "مَلِكِ ٱلنَّاسِ"
+  },
+  {
+    key: "114:3",
+    surahName: "An-Nas",
+    arabic: "إِلَـٰهِ ٱلنَّاسِ"
   }
 ];
 
@@ -37,14 +62,29 @@ let totalQuestions = 5;
 document.getElementById("xp").textContent = xp;
 document.getElementById("streak").textContent = streak;
 
+function showScreen(screenId) {
+  document.getElementById("home-screen").classList.add("hidden");
+  document.getElementById("journey-screen").classList.add("hidden");
+  document.getElementById("lesson-screen").classList.add("hidden");
+  document.getElementById("complete-screen").classList.add("hidden");
+
+  document.getElementById(screenId).classList.remove("hidden");
+}
+
+function showJourney() {
+  showScreen("journey-screen");
+}
+
+function goHome() {
+  document.getElementById("xp").textContent = xp;
+  document.getElementById("streak").textContent = streak;
+  showScreen("home-screen");
+}
+
 function startLesson() {
   currentQuestion = 0;
   score = 0;
-
-  document.getElementById("home-screen").classList.add("hidden");
-  document.getElementById("complete-screen").classList.add("hidden");
-  document.getElementById("lesson-screen").classList.remove("hidden");
-
+  showScreen("lesson-screen");
   loadQuestion();
 }
 
@@ -77,6 +117,7 @@ function createChoices() {
 
   while (choices.length < 4) {
     const randomVerse = verses[Math.floor(Math.random() * verses.length)];
+
     if (!choices.includes(randomVerse.key)) {
       choices.push(randomVerse.key);
     }
@@ -115,34 +156,17 @@ function checkAnswer(selected, button) {
 
 function finishLesson() {
   streak++;
+
   localStorage.setItem("streak", streak);
   localStorage.setItem("xp", xp);
 
   document.getElementById("xp").textContent = xp;
   document.getElementById("streak").textContent = streak;
 
-  document.getElementById("lesson-screen").classList.add("hidden");
-  document.getElementById("complete-screen").classList.remove("hidden");
-
   document.getElementById("score-summary").textContent =
     "You scored " + score + " / " + totalQuestions;
+
+  showScreen("complete-screen");
 }
 
-function goHome() {
-  document.getElementById("complete-screen").classList.add("hidden");
-  document.getElementById("home-screen").classList.remove("hidden");
-
-  document.getElementById("xp").textContent = xp;
-  document.getElementById("streak").textContent = streak;
-}
-
-
-function showJourney() {
-  document.getElementById("home-screen").classList.add("hidden");
-  document.getElementById("journey-screen").classList.remove("hidden");
-}
-
-document.getElementById("journey-screen").classList.add("hidden");
-document.getElementById("lesson-screen").classList.add("hidden");
-document.getElementById("complete-screen").classList.add("hidden");
-document.getElementById("home-screen").classList.remove("hidden");
+showScreen("home-screen");
