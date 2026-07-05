@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quranic Brain</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <h1>Quranic Brain</h1>
+    <p>Guess the Surah and Ayah</p>
 
+    <div class="card">
+      <div id="verse" class="arabic">Loading...</div>
+      <input id="answer" placeholder="Example: 1:6" />
+      <button onclick="checkAnswer()">Check</button>
+      <button onclick="newQuestion()">New Verse</button>
+      <p id="result"></p>
+    </div>
+
+    <div class="stats">
+      XP: <span id="xp">0</span> |
+      Streak: <span id="streak">0</span>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
