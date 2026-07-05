@@ -1,1 +1,53 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f8f6ef;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+} 
 
+.app {
+  text-align: center;
+  max-width: 480px;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 24px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.arabic {
+  font-size: 34px;
+  line-height: 2;
+  direction: rtl;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 12px;
+  width: 80%;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 18px;
+  text-align: center;
+}
+
+button {
+  margin: 10px 5px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 14px;
+  background: #2e7d32;
+  color: white;
+  font-weight: bold;
+}
+
+.stats {
+  margin-top: 20px;
+  font-weight: bold;
+}
