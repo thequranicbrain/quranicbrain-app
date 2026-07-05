@@ -1,211 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta charset="UTF-8">
+  <title>Quranic Brain</title>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Quranic Brain</title>
-
-    <link rel="stylesheet" href="style.css">
-
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
+  <main class="app">
 
-<main class="app">
+    <!-- HOME -->
+    <section id="home-screen" class="screen">
+      <h1>Quranic Brain</h1>
+      <p class="subtitle">Train Your Quran Memory</p>
 
-<!-- ========================= -->
-<!-- HOME SCREEN -->
-<!-- ========================= -->
+      <div class="mascot">👦📖</div>
 
-<section id="home-screen">
+      <div class="stats-card">
+        <div>🔥 <span id="streak">0</span> Day Streak</div>
+        <div>⭐ <span id="xp">0</span> XP</div>
+      </div>
 
-    <h1>Quranic Brain</h1>
-
-    <p class="subtitle">
-        Train your Quran memory one ayah at a time
-    </p>
-
-    <div class="stats-card">
-
-        <div>
-            🔥 Streak:
-            <span id="streak">0</span>
+      <div class="card">
+        <h2>Today's Goal</h2>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 40%;"></div>
         </div>
+        <p>2 / 5 lessons completed</p>
 
-        <div>
-            ⭐ XP:
-            <span id="xp">0</span>
+        <button onclick="showJourney()">Continue Journey</button>
+      </div>
+
+      <div class="card">
+        <h2>Daily Review</h2>
+        <p>3 weak ayahs waiting</p>
+        <button class="secondary-btn">Start Review</button>
+      </div>
+    </section>
+
+    <!-- JOURNEY -->
+    <section id="journey-screen" class="screen hidden">
+      <h1>Quran Journey</h1>
+      <p class="subtitle">30 Juz' Journey Map</p>
+
+      <div id="juz-map" class="juz-map"></div>
+
+      <button onclick="goHome()">← Back Home</button>
+    </section>
+
+    <!-- JUZ DETAIL -->
+    <section id="juz-detail-screen" class="screen hidden">
+      <h1 id="juz-title">Juz 30</h1>
+      <p id="juz-subtitle" class="subtitle">Surah list</p>
+
+      <div class="card">
+        <h2>Juz Progress</h2>
+        <div class="progress-bar">
+          <div id="juz-progress-fill" class="progress-fill"></div>
         </div>
+        <p id="juz-progress-text">0%</p>
+      </div>
 
-    </div>
+      <div id="surah-list" class="surah-list"></div>
 
+      <button onclick="showJourney()">← Back to Journey</button>
+    </section>
 
-    <div class="goal-card">
+    <!-- SURAH DETAIL -->
+    <section id="surah-detail-screen" class="screen hidden">
+      <h1 id="surah-title">Surah Al-Fatihah</h1>
+      <p id="surah-meta" class="subtitle">7 ayahs</p>
 
-        <h2>Today's Challenge</h2>
-
-        <p>Complete 5 ayah questions</p>
-
-        <button onclick="showJourney()">
-            Continue Journey
-        </button>
-
-    </div>
-
-
-    <div class="progress-card">
-
+      <div class="card">
         <h2>Surah Progress</h2>
-
-        <p>Al-Fatihah ★☆☆☆☆</p>
-
-        <p>An-Nas ☆☆☆☆☆</p>
-
-    </div>
-
-</section>
-
-
-<!-- ========================= -->
-<!-- JOURNEY SCREEN -->
-<!-- ========================= -->
-
-<section id="journey-screen" class="hidden">
-
-    <h1>Surah Journey</h1>
-
-    <p class="subtitle">
-        Select a Surah to train
-    </p>
-
-
-    <div class="journey-map">
-
-        <button class="level unlocked"
-                onclick="startLesson()">
-
-            Level 1
-
-            <br><br>
-
-            Al-Fatihah
-
-        </button>
-
-        <div class="path-line"></div>
-
-
-        <button class="level locked">
-
-            Level 2
-
-            <br><br>
-
-            Al-Ikhlas 🔒
-
-        </button>
-
-        <div class="path-line"></div>
-
-
-        <button class="level locked">
-
-            Level 3
-
-            <br><br>
-
-            Al-Falaq 🔒
-
-        </button>
-
-        <div class="path-line"></div>
-
-
-        <button class="level locked">
-
-            Level 4
-
-            <br><br>
-
-            An-Nas 🔒
-
-        </button>
-
-    </div>
-
-    <br>
-
-    <button onclick="goHome()">
-        ← Back Home
-    </button>
-
-</section>
-
-
-
-<!-- ========================= -->
-<!-- LESSON SCREEN -->
-<!-- ========================= -->
-
-<section id="lesson-screen" class="hidden">
-
-    <p id="question-count">
-        Question 1 / 5
-    </p>
-
-    <div class="verse-card">
-
-        <div id="verse"
-             class="arabic">
+        <div class="progress-bar">
+          <div id="surah-progress-fill" class="progress-fill"></div>
         </div>
+        <p id="surah-progress-text">0%</p>
+      </div>
 
-    </div>
+      <div class="module-list">
+        <div class="module done">✅ Recognition</div>
+        <div class="module">⬜ Verse Number</div>
+        <div class="module">⬜ Word Order</div>
+        <div class="module">⬜ Meaning Match</div>
+        <div class="module">⬜ Listening</div>
+        <div class="module">⬜ Recitation</div>
+        <div class="module">⬜ Final Assessment</div>
+      </div>
 
-    <h2>Which ayah is this?</h2>
+      <button onclick="startLesson()">Start Lesson</button>
+      <button class="secondary-btn" onclick="backToJuz()">← Back to Juz</button>
+    </section>
 
-    <div id="choices"
-         class="choices">
-    </div>
+    <!-- LESSON -->
+    <section id="lesson-screen" class="screen hidden">
+      <p id="question-count">Question 1 / 5</p>
 
-    <p id="result"></p>
+      <div class="verse-card">
+        <div id="verse" class="arabic"></div>
+      </div>
 
-</section>
+      <h2>Which ayah is this?</h2>
 
+      <div id="choices" class="choices"></div>
 
+      <p id="result"></p>
+    </section>
 
-<!-- ========================= -->
-<!-- COMPLETE SCREEN -->
-<!-- ========================= -->
+    <!-- COMPLETE -->
+    <section id="complete-screen" class="screen hidden">
+      <div class="mascot">👦🏆</div>
+      <h1>Lesson Complete 🎉</h1>
+      <h2 id="score-summary"></h2>
+      <p>Great job! Keep your Quran memory growing.</p>
 
-<section id="complete-screen" class="hidden">
+      <button onclick="goHome()">Back Home</button>
+    </section>
 
-    <h1>
-        Lesson Complete 🎉
-    </h1>
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <button onclick="goHome()">🏠<br>Home</button>
+      <button onclick="showJourney()">🗺<br>Journey</button>
+      <button>🧠<br>Review</button>
+      <button>🏆<br>Badges</button>
+      <button>👤<br>Profile</button>
+    </nav>
 
-    <h2 id="score-summary">
-    </h2>
+  </main>
 
-    <p>
-        Great job!
-    </p>
-
-    <button onclick="goHome()">
-        Back Home
-    </button>
-
-</section>
-
-
-</main>
-
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
-
 </html>
