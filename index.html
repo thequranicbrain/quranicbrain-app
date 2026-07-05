@@ -6,6 +6,10 @@
 
   <title>Quranic Brain</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -14,76 +18,146 @@
 
     <!-- HOME -->
     <section id="home-screen" class="screen">
-      <h1>Quranic Brain</h1>
-      <p class="subtitle">Train Your Quran Memory</p>
 
-      <div class="mascot">👦📖</div>
+      <div class="hero-card">
+        <div class="hero-text">
+          <p class="small-label">السلام عليكم</p>
+          <h1>Quranic Brain</h1>
+          <p class="subtitle">Train your Quran memory with visual journeys</p>
+        </div>
 
-      <div class="stats-card">
-        <div>🔥 <span id="streak">0</span> Day Streak</div>
-        <div>⭐ <span id="xp">0</span> XP</div>
+        <div class="mascot mascot-large">👦📖</div>
       </div>
 
-      <div class="card">
-        <h2>Today's Goal</h2>
+      <div class="stats-row">
+        <div class="mini-stat">
+          <span class="stat-icon">🔥</span>
+          <div>
+            <strong id="streak">0</strong>
+            <p>Day Streak</p>
+          </div>
+        </div>
+
+        <div class="mini-stat">
+          <span class="stat-icon">⭐</span>
+          <div>
+            <strong id="xp">0</strong>
+            <p>XP Points</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card featured-card">
+        <div class="card-header">
+          <div>
+            <p class="small-label">Today</p>
+            <h2>Today's Goal</h2>
+          </div>
+          <span class="badge">40%</span>
+        </div>
+
         <div class="progress-bar">
           <div class="progress-fill" style="width: 40%;"></div>
         </div>
-        <p>2 / 5 lessons completed</p>
+
+        <p class="card-note">2 / 5 lessons completed</p>
 
         <button onclick="showJourney()">Continue Journey</button>
       </div>
 
       <div class="card">
-        <h2>Daily Review</h2>
-        <p>3 weak ayahs waiting</p>
+        <div class="card-header">
+          <div>
+            <p class="small-label">Memory Care</p>
+            <h2>Daily Review</h2>
+          </div>
+          <span class="badge soft">3 Ayahs</span>
+        </div>
+
+        <p class="card-note">You have 3 weak ayahs waiting for review.</p>
+
         <button class="secondary-btn">Start Review</button>
       </div>
+
     </section>
 
     <!-- JOURNEY -->
     <section id="journey-screen" class="screen hidden">
-     
-<h1>Quran Journey</h1>
-<p class="subtitle">Walk through the Quran, one Juz at a time</p>
-<div class="mascot">👦🗺️</div>
-      
 
+      <div class="top-bar">
+        <button class="icon-btn" onclick="goHome()">←</button>
+        <div>
+          <h1>Quran Journey</h1>
+          <p class="subtitle">Walk through the Quran, one Juz at a time</p>
+        </div>
+      </div>
+
+      <div class="journey-intro-card">
+        <div>
+          <p class="small-label">30 Juz Map</p>
+          <h2>Your Quran Memory Path</h2>
+          <p>Each bubble represents one Juz. Complete lessons, assessments, and reviews to unlock your journey.</p>
+        </div>
+
+        <div class="mascot">👦🗺️</div>
+      </div>
 
       <div id="juz-map" class="juz-map"></div>
 
-      <button onclick="goHome()">← Back Home</button>
     </section>
 
     <!-- JUZ DETAIL -->
     <section id="juz-detail-screen" class="screen hidden">
-      <h1 id="juz-title">Juz 30</h1>
-      <p id="juz-subtitle" class="subtitle">Surah list</p>
 
-      <div class="card">
-        <h2>Juz Progress</h2>
+      <div class="top-bar">
+        <button class="icon-btn" onclick="showJourney()">←</button>
+        <div>
+          <h1 id="juz-title">Juz 30</h1>
+          <p id="juz-subtitle" class="subtitle">Surah list</p>
+        </div>
+      </div>
+
+      <div class="card featured-card">
+        <div class="card-header">
+          <div>
+            <p class="small-label">Progress</p>
+            <h2>Juz Progress</h2>
+          </div>
+          <span id="juz-progress-text" class="badge">0%</span>
+        </div>
+
         <div class="progress-bar">
           <div id="juz-progress-fill" class="progress-fill"></div>
         </div>
-        <p id="juz-progress-text">0%</p>
       </div>
 
       <div id="surah-list" class="surah-list"></div>
 
-      <button onclick="showJourney()">← Back to Journey</button>
     </section>
 
     <!-- SURAH DETAIL -->
     <section id="surah-detail-screen" class="screen hidden">
-      <h1 id="surah-title">Surah Al-Fatihah</h1>
-      <p id="surah-meta" class="subtitle">7 ayahs</p>
 
-      <div class="card">
-        <h2>Surah Progress</h2>
+      <div class="top-bar">
+        <button class="icon-btn" onclick="backToJuz()">←</button>
+        <div>
+          <h1 id="surah-title">Surah Al-Fatihah</h1>
+          <p id="surah-meta" class="subtitle">7 ayahs</p>
+        </div>
+      </div>
+
+      <div class="card featured-card">
+        <div class="card-header">
+          <div>
+            <p class="small-label">Surah Training</p>
+            <h2>Surah Progress</h2>
+          </div>
+          <span id="surah-progress-text" class="badge">0%</span>
+        </div>
+
         <div class="progress-bar">
           <div id="surah-progress-fill" class="progress-fill"></div>
         </div>
-        <p id="surah-progress-text">0%</p>
       </div>
 
       <div class="module-list">
@@ -97,41 +171,52 @@
       </div>
 
       <button onclick="startLesson()">Start Lesson</button>
-      <button class="secondary-btn" onclick="backToJuz()">← Back to Juz</button>
+      <button class="secondary-btn" onclick="backToJuz()">Back to Juz</button>
+
     </section>
 
     <!-- LESSON -->
     <section id="lesson-screen" class="screen hidden">
-      <p id="question-count">Question 1 / 5</p>
+
+      <div class="lesson-top">
+        <p id="question-count">Question 1 / 5</p>
+        <span class="badge">Memory Test</span>
+      </div>
 
       <div class="verse-card">
+        <p class="small-label">Read carefully</p>
         <div id="verse" class="arabic"></div>
       </div>
 
-      <h2>Which ayah is this?</h2>
+      <h2 class="question-title">Which ayah is this?</h2>
 
       <div id="choices" class="choices"></div>
 
       <p id="result"></p>
+
     </section>
 
     <!-- COMPLETE -->
     <section id="complete-screen" class="screen hidden">
-      <div class="mascot">👦🏆</div>
-      <h1>Lesson Complete 🎉</h1>
-      <h2 id="score-summary"></h2>
-      <p>Great job! Keep your Quran memory growing.</p>
 
-      <button onclick="goHome()">Back Home</button>
+      <div class="completion-card">
+        <div class="mascot mascot-large">👦🏆</div>
+        <h1>Lesson Complete 🎉</h1>
+        <h2 id="score-summary"></h2>
+        <p>Great job! Keep your Quran memory growing.</p>
+
+        <button onclick="goHome()">Back Home</button>
+      </div>
+
     </section>
 
     <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
-      <button onclick="goHome()">🏠<br>Home</button>
-      <button onclick="showJourney()">🗺<br>Journey</button>
-      <button>🧠<br>Review</button>
-      <button>🏆<br>Badges</button>
-      <button>👤<br>Profile</button>
+      <button onclick="goHome()">🏠<span>Home</span></button>
+      <button onclick="showJourney()">🗺<span>Journey</span></button>
+      <button>🧠<span>Review</span></button>
+      <button>🏆<span>Badges</span></button>
+      <button>👤<span>Profile</span></button>
     </nav>
 
   </main>
