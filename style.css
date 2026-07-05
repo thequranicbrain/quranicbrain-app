@@ -99,38 +99,68 @@ button {
 }
 
 .juz-map {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin: 28px 0;
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 22px;
+  margin: 34px 0;
+  padding: 20px 0;
+}
+
+.juz-map::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  width: 8px;
+  background: #e0ddd2;
+  border-radius: 20px;
+  z-index: 0;
 }
 
 .juz-bubble {
-  height: 105px;
+  position: relative;
+  z-index: 1;
+  width: 145px;
+  height: 145px;
   border-radius: 50%;
   background: white;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.10);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: var(--text-dark);
   font-weight: bold;
+  border: 6px solid white;
 }
 
-.juz-bubble.mastered {
-  background: var(--green);
-  color: white;
+.juz-bubble:nth-child(odd) {
+  transform: translateX(-55px);
+}
+
+.juz-bubble:nth-child(even) {
+  transform: translateX(55px);
 }
 
 .juz-bubble.current {
   background: var(--gold);
   color: var(--text-dark);
+  border-color: #fff4c2;
+  box-shadow: 0 0 0 8px rgba(242, 201, 76, 0.25),
+              0 12px 28px rgba(0,0,0,0.14);
+}
+
+.juz-bubble.mastered {
+  background: var(--green);
+  color: white;
+  border-color: var(--soft-green);
 }
 
 .juz-bubble.locked {
-  background: #dddddd;
-  color: #777777;
+  background: #efefef;
+  color: #888;
 }
 
 .surah-list {
