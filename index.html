@@ -1,96 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>Quranic Brain</title>
-  <link rel="stylesheet" href="style.css" />
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Quranic Brain</title>
+
+    <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
-  <main class="app">
+<main class="app">
 
-    <section id="home-screen">
-      <h1>Quranic Brain</h1>
-      <p class="subtitle">Train your Quran memory one ayah at a time</p>
-      <section id="journey-screen" class="hidden">
-  <h1>Surah Journey</h1>
-  <p class="subtitle">Choose your memorization path</p>
+<!-- ========================= -->
+<!-- HOME SCREEN -->
+<!-- ========================= -->
+
+<section id="home-screen">
+
+    <h1>Quranic Brain</h1>
+
+    <p class="subtitle">
+        Train your Quran memory one ayah at a time
+    </p>
+
+    <div class="stats-card">
+
+        <div>
+            🔥 Streak:
+            <span id="streak">0</span>
+        </div>
+
+        <div>
+            ⭐ XP:
+            <span id="xp">0</span>
+        </div>
+
+    </div>
+
+
+    <div class="goal-card">
+
+        <h2>Today's Challenge</h2>
+
+        <p>Complete 5 ayah questions</p>
+
+        <button onclick="showJourney()">
+            Continue Journey
+        </button>
+
+    </div>
+
+
+    <div class="progress-card">
+
+        <h2>Surah Progress</h2>
+
+        <p>Al-Fatihah ★☆☆☆☆</p>
+
+        <p>An-Nas ☆☆☆☆☆</p>
+
+    </div>
+
+</section>
+
+
+<!-- ========================= -->
+<!-- JOURNEY SCREEN -->
+<!-- ========================= -->
 
 <section id="journey-screen" class="hidden">
-  <h1>Surah Journey</h1>
-  <p class="subtitle">Choose your memorization path</p>
 
-  <div class="journey-map">
-    <button class="level unlocked" onclick="startLesson()">1<br>Al-Fatihah</button>
-    <div class="path-line"></div>
+    <h1>Surah Journey</h1>
 
-    <button class="level locked">2<br>Al-Ikhlas 🔒</button>
-    <div class="path-line"></div>
+    <p class="subtitle">
+        Select a Surah to train
+    </p>
 
-    <button class="level locked">3<br>Al-Falaq 🔒</button>
-    <div class="path-line"></div>
 
-    <button class="level locked">4<br>An-Nas 🔒</button>
-  </div>
+    <div class="journey-map">
 
-  <button onclick="goHome()">Back Home</button>
+        <button class="level unlocked"
+                onclick="startLesson()">
+
+            Level 1
+
+            <br><br>
+
+            Al-Fatihah
+
+        </button>
+
+        <div class="path-line"></div>
+
+
+        <button class="level locked">
+
+            Level 2
+
+            <br><br>
+
+            Al-Ikhlas 🔒
+
+        </button>
+
+        <div class="path-line"></div>
+
+
+        <button class="level locked">
+
+            Level 3
+
+            <br><br>
+
+            Al-Falaq 🔒
+
+        </button>
+
+        <div class="path-line"></div>
+
+
+        <button class="level locked">
+
+            Level 4
+
+            <br><br>
+
+            An-Nas 🔒
+
+        </button>
+
+    </div>
+
+    <br>
+
+    <button onclick="goHome()">
+        ← Back Home
+    </button>
+
 </section>
-        
-  <div class="journey-map">
-    <button class="level unlocked" onclick="startLesson()">1<br>Al-Fatihah</button>
-    <div class="path-line"></div>
-    <button class="level locked">2<br>Al-Ikhlas 🔒</button>
-    <div class="path-line"></div>
-    <button class="level locked">3<br>Al-Falaq 🔒</button>
-    <div class="path-line"></div>
-    <button class="level locked">4<br>An-Nas 🔒</button>
-  </div>
 
-  <button onclick="goHome()">Back Home</button>
+
+
+<!-- ========================= -->
+<!-- LESSON SCREEN -->
+<!-- ========================= -->
+
+<section id="lesson-screen" class="hidden">
+
+    <p id="question-count">
+        Question 1 / 5
+    </p>
+
+    <div class="verse-card">
+
+        <div id="verse"
+             class="arabic">
+        </div>
+
+    </div>
+
+    <h2>Which ayah is this?</h2>
+
+    <div id="choices"
+         class="choices">
+    </div>
+
+    <p id="result"></p>
+
 </section>
 
-      
-      <div class="stats-card">
-        <div>🔥 Streak: <span id="streak">0</span></div>
-        <div>⭐ XP: <span id="xp">0</span></div>
-      </div>
 
-      <div class="goal-card">
-        <h2>Today's Challenge</h2>
-        <p>Complete 5 ayah questions</p>
-        <button onclick="showJourney()">Continue Journey</button>
-      </div>
 
-      <div class="progress-card">
-        <h2>Surah Progress</h2>
-        <p>Al-Fatihah ★☆☆☆☆</p>
-        <p>An-Nas ☆☆☆☆☆</p>
-      </div>
-    </section>
+<!-- ========================= -->
+<!-- COMPLETE SCREEN -->
+<!-- ========================= -->
 
-    <section id="lesson-screen" class="hidden">
-      <p id="question-count">Question 1 / 5</p>
+<section id="complete-screen" class="hidden">
 
-      <div class="verse-card">
-        <div id="verse" class="arabic"></div>
-      </div>
+    <h1>
+        Lesson Complete 🎉
+    </h1>
 
-      <h2>Which ayah is this?</h2>
+    <h2 id="score-summary">
+    </h2>
 
-      <div id="choices" class="choices"></div>
+    <p>
+        Great job!
+    </p>
 
-      <p id="result"></p>
-    </section>
+    <button onclick="goHome()">
+        Back Home
+    </button>
 
-    <section id="complete-screen" class="hidden">
-      <h1>Lesson Complete 🎉</h1>
-      <p id="score-summary"></p>
-      <p>+ XP added to your progress</p>
-      <button onclick="goHome()">Back Home</button>
-    </section>
+</section>
 
-  </main>
 
-  <script src="script.js"></script>
+</main>
+
+<script src="script.js"></script>
+
 </body>
+
 </html>
