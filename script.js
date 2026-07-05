@@ -28,7 +28,21 @@ const juzData = [
   { number: 27, progress: 0, status: "locked", surahs: ["Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid"] },
   { number: 28, progress: 0, status: "locked", surahs: ["Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim"] },
   { number: 29, progress: 0, status: "locked", surahs: ["Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat"] },
-  { number: 30, progress: 15, status: "current",surahs: ["An-Naba", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat", "Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"] }
+  {
+    number: 30,
+    progress: 15,
+    status: "current",
+    surahs: [
+      "An-Naba", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar",
+      "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la",
+      "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl",
+      "Ad-Duha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr",
+      "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat", "Al-Qari'ah",
+      "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil", "Quraysh",
+      "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad",
+      "Al-Ikhlas", "Al-Falaq", "An-Nas"
+    ]
+  }
 ];
 
 const verses = [
@@ -51,18 +65,30 @@ let score = 0;
 let currentVerse = null;
 let totalQuestions = 5;
 
-document.getElementById("xp").textContent = xp;
-document.getElementById("streak").textContent = streak;
+updateStats();
+
+function updateStats() {
+  document.getElementById("xp").textContent = xp;
+  document.getElementById("streak").textContent = streak;
+}
 
 function showScreen(screenId) {
   const screens = document.querySelectorAll(".screen");
-  screens.forEach(screen => screen.classList.add("hidden"));
+
+  screens.forEach(screen => {
+    screen.classList.add("hidden");
+  });
+
   document.getElementById(screenId).classList.remove("hidden");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
 function goHome() {
-  document.getElementById("xp").textContent = xp;
-  document.getElementById("streak").textContent = streak;
+  updateStats();
   showScreen("home-screen");
 }
 
@@ -77,10 +103,20 @@ function renderJuzMap() {
 
   juzData.forEach(juz => {
     const bubble = document.createElement("button");
-    bubble.className = "juz-bubble " + juz.status;
-    bubble.innerHTML = `Juz ${juz.number}<br>${juz.progress}%`;
+
+    bubble.className = `juz-bubble ${juz.status}`;
+
+    bubble.innerHTML = `
+      <span class="juz-number">${juz.number}</span>
+      <span class="juz-progress">${juz.progress}%</span>
+    `;
 
     bubble.onclick = () => {
+      if (juz.status === "locked") {
+        showLockedMessage(juz.number);
+        return;
+      }
+
       currentJuz = juz;
       showJuzDetail(juz);
     };
@@ -89,45 +125,80 @@ function renderJuzMap() {
   });
 }
 
+function showLockedMessage(juzNumber) {
+  alert(`Juz ${juzNumber} is locked for now. Complete your current Juz first.`);
+}
+
 function showJuzDetail(juz) {
+  currentJuz = juz;
+
   document.getElementById("juz-title").textContent = "Juz " + juz.number;
   document.getElementById("juz-subtitle").textContent =
-    juz.surahs.length + " surah section(s)";
+    juz.surahs.length + " surah section(s) in this journey";
 
   document.getElementById("juz-progress-fill").style.width = juz.progress + "%";
-  document.getElementById("juz-progress-text").textContent = juz.progress + "% complete";
+  document.getElementById("juz-progress-text").textContent = juz.progress + "%";
 
   const list = document.getElementById("surah-list");
   list.innerHTML = "";
 
-  juz.surahs.forEach(name => {
+  juz.surahs.forEach((name, index) => {
     const card = document.createElement("div");
-    card.className = "surah-card";
+    card.className = "surah-item";
+
+    const isAvailable =
+      name === "Al-Fatihah" ||
+      currentJuz.number === 30;
+
+    const progress = getSurahProgress(name);
+
     card.innerHTML = `
-      <h3>${name}</h3>
-      <p>Progress: 0%</p>
-      <button>Open Surah</button>
+      <div>
+        <h3>${index + 1}. ${name}</h3>
+        <p>${isAvailable ? "Memory training available" : "Coming soon"}</p>
+      </div>
+
+      <span class="surah-pill">${progress}%</span>
     `;
 
-    card.querySelector("button").onclick = () => showSurahDetail(name);
+    card.onclick = () => {
+      showSurahDetail(name);
+    };
+
     list.appendChild(card);
   });
 
   showScreen("juz-detail-screen");
 }
 
+function getSurahProgress(name) {
+  const savedProgress = localStorage.getItem("surah-progress-" + name);
+
+  if (savedProgress) {
+    return Number(savedProgress);
+  }
+
+  if (name === "Al-Fatihah") {
+    return 20;
+  }
+
+  return 0;
+}
+
 function showSurahDetail(name) {
   currentSurah = name;
 
+  const progress = getSurahProgress(name);
+
   document.getElementById("surah-title").textContent = "Surah " + name;
+
   document.getElementById("surah-meta").textContent =
-    name === "Al-Fatihah" ? "7 ayahs" : "Coming soon";
+    name === "Al-Fatihah"
+      ? "7 ayahs · Beginner memory training"
+      : "Coming soon · Structure preview";
 
-  document.getElementById("surah-progress-fill").style.width =
-    name === "Al-Fatihah" ? "20%" : "0%";
-
-  document.getElementById("surah-progress-text").textContent =
-    name === "Al-Fatihah" ? "20% complete" : "0% complete";
+  document.getElementById("surah-progress-fill").style.width = progress + "%";
+  document.getElementById("surah-progress-text").textContent = progress + "%";
 
   showScreen("surah-detail-screen");
 }
@@ -141,8 +212,14 @@ function backToJuz() {
 }
 
 function startLesson() {
+  if (currentSurah !== "Al-Fatihah") {
+    alert("For now, the lesson engine is connected to Surah Al-Fatihah. Other surahs will be added next.");
+    return;
+  }
+
   currentQuestion = 0;
   score = 0;
+
   showScreen("lesson-screen");
   loadQuestion();
 }
@@ -186,29 +263,43 @@ function createChoices() {
 
   choices.forEach(choice => {
     const button = document.createElement("button");
-    button.textContent = choice;
+
+    button.textContent = "Ayah " + choice;
     button.className = "choice-btn";
+
     button.onclick = () => checkAnswer(choice, button);
+
     choicesDiv.appendChild(button);
   });
 }
 
-function checkAnswer(selected, button) {
+function checkAnswer(selected, selectedButton) {
   const allButtons = document.querySelectorAll(".choice-btn");
-  allButtons.forEach(btn => btn.disabled = true);
+
+  allButtons.forEach(button => {
+    button.disabled = true;
+
+    const ayahKey = button.textContent.replace("Ayah ", "");
+
+    if (ayahKey === currentVerse.key) {
+      button.classList.add("correct");
+    }
+  });
 
   if (selected === currentVerse.key) {
     score++;
     xp += 10;
-    button.classList.add("correct");
+
+    selectedButton.classList.add("correct");
     document.getElementById("result").textContent = "✅ Correct! +10 XP";
   } else {
-    button.classList.add("wrong");
+    selectedButton.classList.add("wrong");
     document.getElementById("result").textContent =
-      "❌ Correct answer: " + currentVerse.key;
+      "❌ Correct answer: Ayah " + currentVerse.key;
   }
 
   localStorage.setItem("xp", xp);
+  updateStats();
 
   setTimeout(loadQuestion, 1200);
 }
@@ -216,11 +307,13 @@ function checkAnswer(selected, button) {
 function finishLesson() {
   streak++;
 
+  const newProgress = Math.min(100, getSurahProgress("Al-Fatihah") + 10);
+
   localStorage.setItem("streak", streak);
   localStorage.setItem("xp", xp);
+  localStorage.setItem("surah-progress-Al-Fatihah", newProgress);
 
-  document.getElementById("xp").textContent = xp;
-  document.getElementById("streak").textContent = streak;
+  updateStats();
 
   document.getElementById("score-summary").textContent =
     "You scored " + score + " / " + totalQuestions;
