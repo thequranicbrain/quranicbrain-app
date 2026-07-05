@@ -138,3 +138,5 @@ function goHome() {
 document.getElementById("lesson-screen").classList.add("hidden");
 document.getElementById("complete-screen").classList.add("hidden");
 document.getElementById("home-screen").classList.remove("hidden");
+
+
